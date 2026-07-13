@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miloop.id - Premium Crochet</title>
+
+    <script>
+        if (localStorage.getItem('miloop_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <script>
+      console.log("GA4 Analytics initialized: Monitoring bounce rate and conversion metrics.");
+    </script>
+
+    <!-- Library SweetAlert & Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- CSS Custom miloop.id -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap');
+
+        :root {
+            --primary-color: #E07A5F; 
+            --secondary-color: #81B29A; 
+            --bg-color: #FDF8F5; 
+            --text-color: #3D405B; 
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+        }
+
+        h1, h2, h3 { font-family: 'Quicksand', sans-serif; }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--secondary-color);
+            color: white;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Header & Navigasi */
+        header {
+            background: var(--card-bg);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* LOGO STYLING */
+        .logo {
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+        }
+        .logo img {
+            height: 45px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 50%; /* Membuat logo jadi bulat */
+            border: 2px solid var(--secondary-color);
+        }
+        .logo h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); }
+        
+        .nav-center { display: flex; gap: 25px; align-items: center; }
+        .nav-center a { text-decoration: none; color: var(--text-color); font-weight: 600; font-size: 1rem; transition: color 0.3s; }
+        .nav-center a:hover { color: var(--primary-color); }
+
+        /* Menu Pengaturan / Akun Dropdown */
+        .account-menu { position: relative; display: inline-block; }
+        .btn-account-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-account-toggle:hover { background: #d16b50; box-shadow: 0 4px 10px rgba(224, 122, 95, 0.3); }
+
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 50px; background-color: white; min-width: 200px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden; z-index: 1001; flex-direction: column;
+        }
+        .dropdown-content.show { display: flex; animation: fadeDown 0.3s ease; }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dropdown-content a { color: var(--text-color); padding: 15px 20px; text-decoration: none; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; transition: 0.3s; }
+        .dropdown-content a:hover { background-color: var(--bg-color); color: var(--primary-color); }
+        .dropdown-content a.admin-link { color: #d90429; }
+        .dropdown-content a.logout-link { color: #555; background: #f9f9f9; }
+
+        .menu-toggle { display: none; font-size: 1.8rem; cursor: pointer; background: none; border: none; color: var(--primary-color); }
+
+        /* Halaman (SPA) */
+        .halaman { display: none; padding: 40px 5%; min-height: 70vh; }
+        .halaman.aktif { display: block; animation: fadeUp 0.5s ease-out; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* BANNER HERO STYLING */
+        .banner-hero {
+            background: linear-gradient(rgba(61, 64, 91, 0.6), rgba(61, 64, 91, 0.6)), url('https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            border-radius: 24px;
+            padding: 80px 30px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        .banner-hero h2 { font-size: 2.8rem; margin-bottom: 15px; }
+        .banner-hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px auto; opacity: 0.9; line-height: 1.6; }
+
+        /* PRODUK UNGGULAN STYLING */
+        .unggulan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .unggulan-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: 0.3s;
+        }
+        .unggulan-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .unggulan-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .unggulan-card h4 { margin: 0 0 10px 0; color: var(--text-color); font-size: 1.1rem; }
+        .unggulan-card p { color: var(--primary-color); font-weight: 700; margin-bottom: 15px; }
+
+        /* Komponen Umum */
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-color); }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 14px 16px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 1rem; font-family: inherit; outline: none; transition: all 0.3s; box-sizing: border-box;
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(224, 122, 95, 0.15); }
+        
+        .btn-primary { background-color: var(--primary-color); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s; font-family: inherit; }
+        .btn-primary:hover { background-color: #d16b50; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(224, 122, 95, 0.3); }
+        .btn-secondary { background-color: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s;}
+        .btn-secondary:hover { background-color: #6a9680; }
+
+        .card-layout { background: var(--card-bg); padding: 35px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .nav-center { display: none; flex-direction: column; position: absolute; top: 75px; left: 0; width: 100%; background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); padding: 20px 0; gap: 15px; }
+            .nav-center.show { display: flex; }
+            .split-layout { grid-template-columns: 1fr; }
+            .banner-hero h2 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <span>🧶 Miloop.id - Premium Crochet</span>
+        </div>
+    </div>
+
+    <!-- HEADER & NAV -->
+    <header>
+        <!-- BISA GANTI LOGO DISINI (Ganti src="img/logo.png") -->
+        <div class="logo" onclick="pindahHalaman('beranda')">
+            <!-- Jika gambar img/logo.png tidak ada, fallback ke gambar placeholder rajutan -->
+            <img src="images/logo.jpeg" onerror="this.src='https://images.unsplash.com/photo-1605282721151-5178553229b4?auto=format&fit=crop&w=100&q=80'" alt="Logo miloop.id">
+            <h1>miloop.id</h1>
+        </div>
+        
+        <button class="menu-toggle" onclick="toggleMainMenu()">☰</button>
+
+        <div class="nav-center" id="main-nav">
+            <a href="#" onclick="pindahHalaman('beranda'); tutupMainMenu();">Beranda</a>
+            <a href="#" onclick="pindahHalaman('katalog'); tutupMainMenu();">Katalog Produk</a>
+            <a href="#" onclick="pindahHalaman('tentang'); tutupMainMenu();">Tentang Kami</a>
+            <a href="#" onclick="pindahHalaman('keranjang'); tutupMainMenu();">🛒 Keranjang (<span id="badge-cart">0</span>)</a>
+        </div>
+
+        <!-- Tombol Akun / Pengaturan -->
+        <div class="account-menu">
+            <button class="btn-account-toggle" onclick="toggleAccountMenu()">
+                ⚙️ ☰
+            </button>
+            <div id="account-dropdown" class="dropdown-content">
+                <a href="#" id="menu-profil-btn" onclick="cekLoginStatus('user'); tutupAccountMenu();">👤 Profil Saya</a>
+                <a href="#" onclick="cekLoginStatus('admin'); tutupAccountMenu();" class="admin-link">🛠️ Dasbor Admin</a>
+                <a href="#" onclick="prosesLogout()" class="logout-link">🚪 Keluar (Logout)</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= HALAMAN BERANDA (DEFAULT AKTIF) ================= -->
+    <main id="halaman-beranda" class="halaman aktif container">
+        
+        <!-- BANNER HERO (Bisa ganti background image di CSS .banner-hero) -->
+        <div class="banner-hero">
+            <h2>Rajutan Estetik untuk Keseharianmu</h2>
+            <p>Temukan koleksi Amigurumi menggemaskan, Bucket Hat stylish, Totebag fungsional, dan Keychain unik 100% buatan tangan yang dirajut dengan penuh cinta.</p>
+            <button class="btn-primary" onclick="pindahHalaman('katalog')" style="padding: 16px 35px; border-radius: 30px; font-size: 1.1rem;">
+                Lihat Koleksi Lengkap 🧶
+            </button>
+        </div>
+
+        <!-- PRODUK UNGGULAN -->
+        <div class="card-layout">
+            <h2 style="text-align: center; color: var(--primary-color);">🌟 Produk Unggulan Kami</h2>
+            <p style="text-align: center; color: #6B7280; margin-bottom: 25px;">Karya rajut favorit (Best Seller) dari miloop.id</p>
+            
+            <div class="unggulan-grid">
+                <!-- Produk Unggulan 1 (Bunny = ID 1) -->
+                <div class="unggulan-card">
+                    <img src="images/amigurumi-tottoro.jpeg" alt="Amigurumi Tottoro">
+                    <h4>Amigurumi Tottoro</h4>
+                    <p>Rp 95.000</p>
+                    <button class="btn-secondary" onclick="tampilkanDetail(1)">Lihat Detail</button>
+                </div>
+                
+                <!-- Produk Unggulan 2 (Granny Hat = ID 13) -->
+                <div class="unggulan-card">
+                    <img src="images/bucket-hat-giraffe.jpeg" alt="Giraffe Hat">
+                    <h4>Giraffe Hat</h4>
+                    <p>Rp 85.000</p>
+                    <button class="btn-secondary" onclick="tampilkanDetail(13)">Lihat Detail</button>
+                </div>
+
+                <!-- Produk Unggulan 3 (Chunky Tote = ID 21) -->
+                <div class="unggulan-card">
+                    <img src="images/totebag-pink-butterfly.jpeg" alt="Pink Butterfly Tote Bag">
+                    <h4>Pink Butterfly Tote Bag</h4>
+                    <p>Rp 210.000</p>
+                    <button class="btn-secondary" onclick="tampilkanDetail(21)">Lihat Detail</button>
+                </div>
+
+                <!-- Produk Unggulan 4 (Mini Daisy Key = ID 29) -->
+                <div class="unggulan-card">
+                    <img src="images/keychain-chick.jpeg" alt="Chick Keychain">
+                    <h4>Chick Keychain</h4>
+                    <p>Rp 35.000</p>
+                    <button class="btn-secondary" onclick="tampilkanDetail(29)">Lihat Detail</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= HALAMAN KATALOG PRODUK ================= -->
+    <main id="halaman-katalog" class="halaman container">
+        <div class="card-layout" style="margin-bottom: 25px; background: var(--secondary-color); color: white;">
+            <h2 style="margin-bottom: 15px; font-size: 1.8rem;">Katalog miloop.id 🧶</h2>
+            <div class="filter-container" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <input type="text" id="search-input" placeholder="Cari amigurumi, tas, topi..." style="flex: 1; padding: 14px 20px; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none;">
+                
+                <select id="kategori-select" style="padding: 14px 20px; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; background: white; cursor: pointer; outline: none; color: var(--text-color);">
+                    <option value="semua">Semua Produk (36)</option>
+                    <option value="amigurumi">🧸 Amigurumi</option>
+                    <option value="buckethat">👒 Bucket Hat</option>
+                    <option value="bag">👜 Bag / Totebag</option>
+                    <option value="keychain">🔑 Keychain</option>
+                </select>
+            </div>
+        </div>
+        <div class="product-grid" id="daftar-produk" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px;">
+            <!-- Produk dirender disini lewat script.js -->
+        </div>
+    </main>
+
+    <!-- ================= HALAMAN TENTANG KAMI ================= -->
+    <main id="halaman-tentang" class="halaman container">
+        <div class="card-layout" style="text-align: center; padding: 50px 20px;">
+            <h2 style="color: var(--primary-color); margin-bottom: 15px; font-size: 2rem;">Kisah Miloop.id</h2>
+            <img src="images/tentang-kami.jpeg" alt="Tentang Merajut" style="width: 100%; max-width: 600px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+            <p style="line-height: 1.8; color: var(--text-color); font-size: 1.1rem; max-width: 700px; margin: 0 auto;"><strong>Miloop.id</strong> bermula dari kecintaan pada seni merajut. Kami percaya bahwa setiap benang memiliki ceritanya sendiri. Kami menghadirkan lebih dari sekadar barang, melainkan karya seni berbentuk Amigurumi yang menggemaskan, Bucket Hat yang stylish, Totebag yang kuat & fungsional, serta Keychain rajut yang unik menemani hari-harimu.</p>
+        </div>
+    </main>
+
+    <!-- ================= HALAMAN KERANJANG & CHECKOUT ================= -->
+    <main id="halaman-keranjang" class="halaman container">
+        <div class="split-layout">
+            <div class="card-layout">
+                <h2>🛒 Isi Keranjang</h2>
+                <hr style="border: 0; border-top: 2px dashed #E5E7EB; margin: 20px 0;">
+                <div id="cart-items"></div>
+                <h3 style="margin-top:25px; text-align:right; font-size: 1.6rem; font-weight: 700;">Total: <span id="cart-total" style="color: var(--primary-color);">Rp 0</span></h3>
+            </div>
+            
+            <div class="card-layout">
+                <h2>💳 Checkout Pesanan</h2>
+                <hr style="border: 0; border-top: 2px dashed #E5E7EB; margin: 20px 0;">
+                <form id="form-checkout">
+                    <div class="input-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="nama-pembeli" required placeholder="Contoh: Rina Melati">
+                    </div>
+                    <div class="input-group">
+                        <label>Alamat Pengiriman</label>
+                        <textarea id="alamat-pembeli" required placeholder="Detail alamat, RT/RW, Kota" style="min-height: 90px; resize: vertical;"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Kurir Pengiriman</label>
+                        <select id="metode-pengiriman">
+                            <option value="Reguler">Reguler (2-3 Hari)</option>
+                            <option value="Next Day">Next Day (1 Hari)</option>
+                            <option value="Instan">Instan (Gojek/Grab)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Metode Pembayaran</label>
+                        <select id="metode-bayar">
+                            <option value="QRIS">QRIS (Semua Bank/E-Wallet)</option>
+                            <option value="BCA">Transfer BCA</option>
+                            <option value="Mandiri">Virtual Account Mandiri</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" style="margin-top:10px;">Proses Pembayaran</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= HALAMAN PROFIL USER ================= -->
+    <main id="halaman-user" class="halaman container">
+        <div class="card-layout">
+            <h2 id="judul-profil-user">👤 Profil Saya</h2>
+            <hr style="margin: 20px 0; border: 0; border-top: 2px dashed #E5E7EB;">
+            <h3>Riwayat Pesanan Anda</h3>
+            <div id="user-riwayat-pesanan" style="margin-top: 15px; font-size: 0.95rem;"></div>
+        </div>
+    </main>
+
+    <!-- ================= HALAMAN ADMIN ================= -->
+    <main id="halaman-admin" class="halaman container">
+        <div class="card-layout" style="margin-bottom: 25px; background: var(--text-color); color: white;">
+            <h2>🛠️ Dasbor Admin - miloop.id</h2>
+            <p style="color: #D1D5DB; margin-top: 5px;">Kelola stok produk rajut, pantau log pesanan, dan analitik.</p>
+        </div>
+
+        <div class="split-layout">
+            <!-- Grafik Penjualan -->
+            <div class="card-layout">
+                <h3>📈 Analitik Penjualan</h3>
+                <canvas id="grafikPenjualan" width="400" height="250" style="margin-top: 20px;"></canvas>
+            </div>
+            
+            <!-- Update Stok Produk -->
+            <div class="card-layout">
+                <h3>📦 Manajemen Stok Produk</h3>
+                <form id="form-tambah-stok" style="margin-top: 20px;">
+                    <div class="input-group">
+                        <label>Pilih Produk (Amigurumi/Hat/Tas/dll)</label>
+                        <select id="pilih-produk-stok"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Jumlah Stok Tambahan</label>
+                        <input type="number" id="jumlah-stok-tambah" placeholder="Contoh: 10" required min="1">
+                    </div>
+                    <button type="submit" class="btn-primary">Update Stok</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card-layout" style="margin-top: 30px;">
+            <h3>📋 Log Pesanan Pelanggan</h3>
+            <div class="table-responsive" style="margin-top: 20px; overflow-x: auto;">
+                <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                    <thead>
+                        <tr style="background-color: var(--primary-color); color: white;">
+                            <th style="padding: 14px; border-radius: 8px 0 0 0;">ID Pesanan</th>
+                            <th style="padding: 14px;">Tanggal</th>
+                            <th style="padding: 14px;">Nama Pembeli</th>
+                            <th style="padding: 14px;">Pengiriman</th>
+                            <th style="padding: 14px;">Total Nilai</th>
+                            <th style="padding: 14px; border-radius: 0 8px 0 0;">Metode Bayar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-pesanan-admin"></tbody>
+                </table>
+            </div>
+            <button onclick="bersihkanDataAdmin()" style="margin-top:25px; background:#e63946; color:white; border:none; padding:14px 20px; border-radius:12px; cursor:pointer; font-weight: 600; width: 100%;">🗑️ Hapus Seluruh Data Transaksi</button>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer style="background: var(--text-color); color: white; padding: 60px 5% 30px 5%; margin-top: 60px;">
+        <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px;">
+            <div class="footer-section">
+                <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">Miloop.id</h3>
+                <p style="color: #D1D5DB; line-height: 1.8; font-size: 0.95rem;">Toko rajut premium. Menyediakan kreasi tangan Amigurumi, Bucket Hat kekinian, Tote Bag tebal, hingga Keychain estetik.</p>
+            </div>
+            <div class="footer-section">
+                <h3 style="color: white; margin-bottom: 20px; font-size: 1.2rem;">Layanan Pelanggan</h3>
+                <p style="color: #D1D5DB; margin-bottom: 12px;">📍 Studio Rajut Miloop, Bandung Raya</p>
+                <p style="color: #D1D5DB; margin-bottom: 12px;">📞 WhatsApp: <a href="#" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">+62 812-0000-0000</a></p>
+                <p style="color: #D1D5DB;">✉️ Email: <a href="mailto:hell" style="color: var(--secondary-color); text-decoration: none;">miloop.id@gmail.com</a></p>
+            </div>
+        </div>
+        <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; text-align: center; color: #9CA3AF; font-size: 0.9rem;">
+            <p>&copy; 2026 miloop.id - All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    
+    <!-- Script Interaksi UI -->
+    <script>
+        function toggleMainMenu() { document.getElementById("main-nav").classList.toggle("show"); }
+        function tutupMainMenu() { document.getElementById("main-nav").classList.remove("show"); }
+        function toggleAccountMenu() { document.getElementById("account-dropdown").classList.toggle("show"); }
+        function tutupAccountMenu() { document.getElementById("account-dropdown").classList.remove("show"); }
+
+        // Fungsi Logout
+        function prosesLogout() {
+            Swal.fire({
+                title: 'Yakin ingin keluar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Keluar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('miloop_logged_in');
+                    localStorage.removeItem('miloop_role');
+                    window.location.href = 'login.html'; // Lempar kembali ke halaman login
+                }
+            });
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-account-toggle')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) {
+                        dropdowns[i].classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

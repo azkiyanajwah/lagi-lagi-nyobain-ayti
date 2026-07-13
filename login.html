@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Miloop.id</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap');
+
+        :root {
+            --primary-color: #E07A5F; 
+            --secondary-color: #81B29A; 
+            --text-color: #3D405B; 
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(224, 122, 95, 0.85), rgba(129, 178, 154, 0.85)), url('https://images.unsplash.com/photo-1605282721151-5178553229b4?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+        }
+
+        h2 { font-family: 'Quicksand', sans-serif; }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 45px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-color); }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(224, 122, 95, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .btn-primary:hover {
+            background-color: #d16b50;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(224, 122, 95, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Miloop.id</h2>
+        <p style="color: #6B7280; margin-bottom: 25px;">Masuk untuk melihat koleksi rajutan eksklusif.</p>
+        
+        <form id="form-login-standalone">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="login-username" required placeholder="admin atau user">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="login-password" required placeholder="Masukkan 123">
+            </div>
+            <button type="submit" class="btn-primary">Login Sekarang</button>
+        </form>
+        <p style="margin-top: 20px; font-size: 0.85rem; color: var(--primary-color);">💡 Hint: Login <b>admin/123</b> atau <b>user/123</b></p>
+    </div>
+
+    <!-- Script khusus untuk menangani login -->
+    <script>
+    document.getElementById('form-login-standalone').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const inputName = document.getElementById('login-username').value;
+        const pass = document.getElementById('login-password').value;
+
+        // Password bebas pakai 123 untuk simulasi
+        if (pass !== '123') {
+            Swal.fire('Gagal', 'Password salah! Gunakan 123', 'error');
+            return;
+        }
+
+        // Simpan status login
+        localStorage.setItem('miloop_logged_in', 'true');
+        
+        // Cek apakah dia mau masuk sebagai Admin atau User biasa
+        if (inputName.toLowerCase() === 'admin') {
+            localStorage.setItem('miloop_role', 'admin');
+            localStorage.setItem('miloop_nama', 'Admin miloop');
+        } else {
+            localStorage.setItem('miloop_role', 'user');
+            // Simpan nama asli yang diketik!
+            localStorage.setItem('miloop_nama', inputName); 
+        }
+        
+        Swal.fire({
+            title: 'Berhasil!',
+            text: `Selamat datang, ${inputName}!`,
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        }).then(() => {
+            window.location.href = 'index.html';
+        });
+    });
+</script>
+</body>
+</html>
